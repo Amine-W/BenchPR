@@ -2,11 +2,29 @@ document.getElementById('maxCalculator').addEventListener('submit', function(e) 
     e.preventDefault();
 
     var weight = document.getElementById('weight').value;
-    var max = calculateMax(weight);
-
-    document.getElementById('result').innerHTML = `Votre max estimé pour 1RM est: ${max.toFixed(2)} kg`;
+    var reps = document.getElementById('reps').value;
+    var max = calculateMax(weight, reps);
+    animateResult(0, max, 1000); 
 });
 
-function calculateMax(weight) {
-    return weight * 1.3; // Multiplier le poids soulevé 10 fois par 1.3
+function calculateMax(weight, reps) {
+    return (reps > 1) ? weight * (1 + (reps / 30)) : weight; 
+}
+
+function animateResult(start, end, duration) {
+    let startTime = null;
+
+    function animation(currentTime) {
+        if (!startTime) startTime = currentTime;
+        const elapsedTime = currentTime - startTime;
+        const nextValue = Math.min(start + (end - start) * (elapsedTime / duration), end);
+        
+        document.querySelector('.result-display').innerHTML = `${nextValue.toFixed(2)} kg`;
+
+        if (nextValue < end) {
+            requestAnimationFrame(animation);
+        }
+    }
+
+    requestAnimationFrame(animation);
 }
